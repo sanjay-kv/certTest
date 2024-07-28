@@ -25,15 +25,23 @@ jobs:
           import sys
 
           with open('add-your-certificate.md', 'r') as f:
-              content = f.read()
+              lines = f.readlines()
 
-          pattern = r'^\| \d+ \| [^|]+ \| [^|]+ \| [^|]+ \| "[^|]+" \| "[^|]+" \|$'
+          # Skip the first two lines (header and separator)
+          data_lines = lines[2:]
+
+          pattern = r'^\|\s*(\d+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*\[([^]]+)\]\(([^)]+)\)\s*\|\s*\[([^]]+)\]\(([^)]+)\)\s*\|\s*([^|]+)\s*\|$'
           
-          lines = content.split('\n')
-          for line in lines:
-              if line.strip() and not re.match(pattern, line.strip()):
-                  print(f"Invalid line format: {line}")
-                  sys.exit(1)
+          for i, line in enumerate(data_lines, start=3):  # start=3 because we skipped 2 lines
+              line = line.strip()
+              if line:
+                  match = re.match(pattern, line)
+                  if not match:
+                      print(f"Invalid line format at line {i}: {line}")
+                      sys.exit(1)
+                  
+                  # Additional checks can be added here if needed
+                  # For example, checking if the number is sequential
 
           print("PR content format is valid.")
         shell: python
