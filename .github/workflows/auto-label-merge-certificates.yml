@@ -10,6 +10,10 @@ jobs:
   process-certificate-pr:
     runs-on: ubuntu-latest
     if: startsWith(github.event.pull_request.title, 'Update add-your-certificate.md')
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
