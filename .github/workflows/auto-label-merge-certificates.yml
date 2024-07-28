@@ -1,0 +1,73 @@
+name: Auto Label and Merge Certificate PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'add-your-certificate.md'
+
+jobs:
+  process-certificate-pr:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.pull_request.title, 'Update add-your-certificate.md')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Check PR content format
+        run: |
+          import re
+          import sys
+
+          with open('add-your-certificate.md', 'r') as f:
+              content = f.read()
+
+          pattern = r'^\| \d+ \| [^|]+ \| [^|]+ \| [^|]+ \| "[^|]+" \| "[^|]+" \|$'
+          
+          lines = content.split('\n')
+          for line in lines:
+              if line.strip() and not re.match(pattern, line.strip()):
+                  print(f"Invalid line format: {line}")
+                  sys.exit(1)
+
+          print("PR content format is valid.")
+        shell: python
+
+      - name: Label PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['gssoc', 'postman']
+            })
+
+      - name: Get PR creation time
+        id: pr_time
+        run: |
+          PR_TIME=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            | jq -r '.created_at')
+          echo "PR_CREATION_TIME=$PR_TIME" >> $GITHUB_OUTPUT
+
+      - name: Auto-merge PR
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: "gssoc,postman"
+          MERGE_METHOD: "squash"
+          MERGE_COMMIT_MESSAGE: "Auto-merged PR #{pullRequest.number}: {pullRequest.title}"
+          MERGE_RETRIES: "6"
+          MERGE_RETRY_SLEEP: "10000"
+          MERGE_REQUIRED_APPROVALS: "0"
+          MERGE_DELETE_BRANCH: "true"
+          MERGE_FILTER_AUTHOR: ""
+          SORT_ORDER: "created-asc"
