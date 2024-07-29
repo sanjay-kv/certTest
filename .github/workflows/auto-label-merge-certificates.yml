@@ -1,7 +1,7 @@
 name: Auto Label and Merge Certificate PRs
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
       - 'add-your-certificate.md'
