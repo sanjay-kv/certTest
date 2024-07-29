@@ -1,4 +1,5 @@
 name: Auto Label and Merge Certificate PRs
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -26,24 +27,33 @@ jobs:
         run: |
           import re
           import sys
+
           with open('add-your-certificate.md', 'r') as f:
-            lines = f.readlines()
+              lines = f.readlines()
+
+          # Skip the first two lines (header and separator)
           data_lines = lines[2:]
+
           pattern = r'^\|\s*(\d+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*\[([^]]+)\]\(([^)]+)\)\s*\|\s*\[([^]]+)\]\(([^)]+)\)\s*\|\s*([^|]+)\s*\|$'
-          for i, line in enumerate(data_lines, start=3):
-            line = line.strip()
-            if line:
-              match = re.match(pattern, line)
-              if not match:
-                print(f"Invalid line format at line {i}: {line}")
-                sys.exit(1)
+          
+          for i, line in enumerate(data_lines, start=3):  # start=3 because we skipped 2 lines
+              line = line.strip()
+              if line:
+                  match = re.match(pattern, line)
+                  if not match:
+                      print(f"Invalid line format at line {i}: {line}")
+                      sys.exit(1)
+                  
+                  # Additional checks can be added here if needed
+                  # For example, checking if the number is sequential
+
           print("PR content format is valid.")
         shell: python
 
       - name: Label PR
         uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.CERT_TOKEN}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
@@ -55,15 +65,15 @@ jobs:
       - name: Get PR creation time
         id: pr_time
         run: |
-          PR_TIME=$(curl -s -H "Authorization: token ${{ secrets.CERT_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
-          | jq -r '.created_at')
+          PR_TIME=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            | jq -r '.created_at')
           echo "PR_CREATION_TIME=$PR_TIME" >> $GITHUB_OUTPUT
 
       - name: Auto-merge PR
         uses: pascalgn/automerge-action@v0.15.6
         env:
-          GITHUB_TOKEN: ${{ secrets.CERT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_LABELS: "gssoc,postman"
           MERGE_METHOD: "squash"
           MERGE_COMMIT_MESSAGE: "Auto-merged PR #{pullRequest.number}: {pullRequest.title}"
