@@ -6,5 +6,5 @@
 | 4   | Siddheya Kulkarni        | siddheyakul@gmail.com      | [Siddheya Kulkarni](https://www.linkedin.com/in/siddheya-kulkarni/)   | [Certificate Link](https://badgr.com/public/assertions/YQREFtD4SjqQzPpvVyi55A?identity__email=siddheyakul@gmail.com) | Could have added more test script tasks  |
 | 5   | Sid        | siddheyakul@gmail.com      | [Siddheya Kulkarni](https://www.linkedin.com/in/siddheya-kulkarni/)   | [Certificate Link](https://badgr.com/public/assertions/YQREFtD4SjqQzPpvVyi55A?identity__email=siddheyakul@gmail.com) | Could have added more test script tasks  |
 | 6   | Sid test       | siddheyakul@gmail.com      | [Siddheya Kulkarni](https://www.linkedin.com/in/siddheya-kulkarni/)   | [Certificate Link](https://badgr.com/public/assertions/YQREFtD4SjqQzPpvVyi55A?identity__email=siddheyakul@gmail.com) | Could have added more test script tasks  |
-
+| 7   | Sid test_2      | siddheyakul@gmail.com      | [Siddheya Kulkarni](https://www.linkedin.com/in/siddheya-kulkarni/)   | [Certificate Link](https://badgr.com/public/assertions/YQREFtD4SjqQzPpvVyi55A?identity__email=siddheyakul@gmail.com) | Could have added more test script tasks  |
 
